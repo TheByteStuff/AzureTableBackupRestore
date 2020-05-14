@@ -1,4 +1,0 @@
-D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\obj\Debug\netcoreapp1.0\AzureTableBackupRestore.csprojAssemblyReference.cache
-D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\obj\Debug\netcoreapp1.0\AzureTableBackupRestore.csproj.CoreCompileInputs.cache
-D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\obj\Debug\netcoreapp1.0\AzureTableBackupRestore.AssemblyInfoInputs.cache
-D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\obj\Debug\netcoreapp1.0\AzureTableBackupRestore.AssemblyInfo.cs
