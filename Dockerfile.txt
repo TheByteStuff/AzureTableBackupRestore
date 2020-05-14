@@ -4,8 +4,8 @@ WORKDIR /app
 RUN mkdir ./AzureTableBackupRestore
 RUN mkdir /app/data
 
-COPY ./AZ/AzureTableBackupRestore/*.csproj ./AzureTableBackupRestore/
-COPY ./AZ/AzureTableBackupRestore/*.cs ./AzureTableBackupRestore/
+COPY ./AzureTableBackupRestore/*.csproj ./AzureTableBackupRestore/
+COPY ./AzureTableBackupRestore/*.cs ./AzureTableBackupRestore/
 
 RUN dotnet publish AzureTableBackupRestore -c Release -o out
 
