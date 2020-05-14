@@ -1,0 +1,14 @@
+D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\bin\Release\netcoreapp2.0\Microsoft.Azure.Cosmos.ServiceInterop.dll
+D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\bin\Release\netcoreapp2.0\Cosmos.CRTCompat.dll
+D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\bin\Release\netcoreapp2.0\AzureTableBackupRestore.deps.json
+D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\bin\Release\netcoreapp2.0\AzureTableBackupRestore.runtimeconfig.json
+D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\bin\Release\netcoreapp2.0\AzureTableBackupRestore.runtimeconfig.dev.json
+D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\bin\Release\netcoreapp2.0\AzureTableBackupRestore.dll
+D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\bin\Release\netcoreapp2.0\AzureTableBackupRestore.pdb
+D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\obj\Release\netcoreapp2.0\AzureTableBackupRestore.csprojAssemblyReference.cache
+D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\obj\Release\netcoreapp2.0\AzureTableBackupRestore.csproj.CoreCompileInputs.cache
+D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\obj\Release\netcoreapp2.0\AzureTableBackupRestore.AssemblyInfoInputs.cache
+D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\obj\Release\netcoreapp2.0\AzureTableBackupRestore.AssemblyInfo.cs
+D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\obj\Release\netcoreapp2.0\AzureTableBackupRestore.dll
+D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\obj\Release\netcoreapp2.0\AzureTableBackupRestore.pdb
+D:\github\TheByteStuff\AzureTableBackupRestore\AzureTableBackupRestore\bin\Release\netcoreapp2.0\appsettings.json

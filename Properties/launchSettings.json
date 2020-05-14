@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AzureTableBackupRestore": {
+      "commandName": "Project",
+      "commandLineArgs": "AzureStorageConfigConnectionx=CommandLineAS AzureBlobStorageConfigConnectionx=CommandLineBS"
+    }
+  }
+}

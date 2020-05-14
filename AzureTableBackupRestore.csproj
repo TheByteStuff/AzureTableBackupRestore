@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <StartupObject>TheByteStuff.AzureTableBackupRestore.CommandLineTool</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TheByteStuff.AzureTableUtilities" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
