@@ -1,5 +1,5 @@
 # AzureTableBackupRestore
-Command line tool for backup and restore of Azure tables to/from local file or Azure blob storage
+Command line tool for backup and restore of Azure tables to/from local file or Azure blob storage using TheByteStuff.AzureTableUtilities found on NuGet: https://www.nuget.org/packages/TheByteStuff.AzureTableUtilities/
 
 Backup/restore parameters can be stored in a settings file (appsettings.json) or passed on the command line.
 
