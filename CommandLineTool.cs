@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Configuration;
+using System.Collections.Generic;
 using System.Security;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder;
 using Microsoft.Extensions.Configuration.FileExtensions;
 using Microsoft.Extensions.Configuration.Json;
 using TheByteStuff.AzureTableUtilities;
@@ -15,6 +17,7 @@ namespace TheByteStuff.AzureTableBackupRestore
         private readonly static string ConfigFilePathParmName = "ConfigFilePath";
         private readonly static string AzureBlobStorageConfigConnectionParmName = "AzureBlobStorageConfigConnection";
         private readonly static string AzureStorageConfigConnectionParmName = "AzureStorageConfigConnection";
+        private readonly static string AzureStorageConfigConnectionDestinationParmName = "AzureStorageDestinationConfigConnection";
         private readonly static string CommandNameParmName = "Command";
         private readonly static string TargetParmName = "Target";
         private readonly static string CompressParmName = "Compress";
@@ -35,6 +38,7 @@ namespace TheByteStuff.AzureTableBackupRestore
 
         private SecureString AzureBlobStorageConfigConnection = new SecureString();
         private SecureString AzureStorageConfigConnection = new SecureString();
+        private SecureString AzureStorageDestinationConfigConnection = new SecureString();
 
         private void WriteOutput(string s)
         {
@@ -61,9 +65,10 @@ namespace TheByteStuff.AzureTableBackupRestore
                 , WorkingDirectoryParmName //15
                 , OutFileDirectoryParmName //16
                 , RestoreFileNamePathParmName //17
+                , AzureStorageConfigConnectionDestinationParmName //18 
             };
 
-            WriteOutput("Backup and Restore Azure Tables.  Backup maybe to local system file or Azure blob storage.  Restore may be from local system file or from Azure blob storage.  Command line parameter values will override a value in the settings file.");
+            WriteOutput("Backup, Copy and Restore Azure Tables.  Backup maybe to local system file or Azure blob storage.  Restore may be from local system file or from Azure blob storage.  Command line parameter values will override a value in the settings file.");
             WriteOutput("");
             WriteOutput(String.Format("AzureTableBackupRestore [{0}] [{1}] [{2}] [{3}] [{4}] [{5}] [{6}] [{7}] [{8}] [{9}] [{10}] [{11}] [{12}] [{13}] [{14}] [{15}] [{16}] [{17}]", ArgOptions));
             WriteOutput("");
@@ -71,15 +76,16 @@ namespace TheByteStuff.AzureTableBackupRestore
             WriteOutput(String.Format("{1}=<Configuration File Path> (default current directory)", ArgOptions));
             WriteOutput(String.Format("{2}=<ConnectionSpec> (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{3}=<ConnectionSpec> (or use Configuration File)", ArgOptions));
+            WriteOutput(String.Format("{18}=<ConnectionSpec> (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{4}=<Backup|Restore>", ArgOptions));
-            WriteOutput(String.Format("{5}=<Blob|File> (indicates source/destination)", ArgOptions));
-            WriteOutput(String.Format("{5}=<ToBlob|ToFile|FromBlob|FromFile|Blob|File> (indicates source/destination)", ArgOptions));
+            WriteOutput(String.Format("{5}=<Blob|File> (indicates source/destination for backup/restore)", ArgOptions));
+            WriteOutput(String.Format("{5}=<ToBlob|ToFile|FromBlob|FromFile|Blob|File> (indicates source/destination for backup/restore)", ArgOptions));
             WriteOutput(String.Format("{6}=<true|false>, valid on backup (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{7}=<true|false> (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{8}=<int> Number of days to retain file, valid on backup (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{9}=<int> Azure call timeout in seconds (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{10}=<name of table>, valid on backup (or use Configuration File)", ArgOptions));
-            WriteOutput(String.Format("{11}=<Table name to restore to>, valid on restore (or use Configuration File)", ArgOptions));
+            WriteOutput(String.Format("{11}=<Table name to restore or copy to>, valid on copy/restore (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{12}=<Name of Original Table as backed up>, valid on restore (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{13}=<Azure Root Blob> (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{14}=<Azure Blob File Name>, valid on restore only (or use Configuration File)", ArgOptions));
@@ -109,14 +115,15 @@ namespace TheByteStuff.AzureTableBackupRestore
                 var builder = new ConfigurationBuilder()
                     .SetBasePath(instance.GetCommandLineParameterValue(ConfigFilePathParmName, Directory.GetCurrentDirectory()))
                     .AddJsonFile(instance.GetCommandLineParameterValue(ConfigFileNameParmName, "appsettings.json"));
-
-                IConfiguration config = new ConfigurationBuilder()
-                        .AddJsonFile(instance.GetCommandLineParameterValue(ConfigFileNameParmName, "appsettings.json"), true, true)
-                        .Build();
+                IConfiguration config = builder.Build();
 
                 foreach (char c in instance.GetCommandLineParameterValue(AzureStorageConfigConnectionParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureStorageConfigConnectionParmName)).ToCharArray())
                 {
                     instance.AzureStorageConfigConnection.AppendChar(c);
+                }
+                foreach (char c in instance.GetCommandLineParameterValue(AzureStorageConfigConnectionDestinationParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureStorageConfigConnectionDestinationParmName)).ToCharArray())
+                {
+                    instance.AzureStorageDestinationConfigConnection.AppendChar(c);
                 }
                 foreach (char c in instance.GetCommandLineParameterValue(AzureBlobStorageConfigConnectionParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureBlobStorageConfigConnectionParmName)).ToCharArray())
                 {
@@ -124,12 +131,17 @@ namespace TheByteStuff.AzureTableBackupRestore
                 }
 
                 string Command = instance.GetFromParmOrFile(config, CommandNameParmName);
-                if ("backup".Equals(Command) || "restore".Equals(Command))
+                if ("backup".Equals(Command) || "copy".Equals(Command) || "restore".Equals(Command))
                 {
                     if ("backup".Equals(Command))
                     {
                         instance.WriteOutput("Beginning backup process.");
                         instance.WriteOutput(String.Format("{0}", instance.Backup(instance.AzureBlobStorageConfigConnection, instance.AzureStorageConfigConnection, config)));
+                    }
+                    else if ("copy".Equals(Command))
+                    {
+                        instance.WriteOutput("Beginning copy process.");
+                        instance.WriteOutput(String.Format("{0}", instance.Copy(instance.AzureStorageConfigConnection, instance.AzureStorageDestinationConfigConnection, config)));
                     }
                     else
                     {
@@ -212,13 +224,22 @@ namespace TheByteStuff.AzureTableBackupRestore
                 string Target = GetFromParmOrFile(config, TargetParmName).ToLower();
                 if (!String.IsNullOrEmpty(Target))
                 {
+                    var sectionFilters = config.GetSection("Filters");
+                    List<Filter> filters = sectionFilters.Get<List<Filter>>();
+
+                    if (!Filter.AreFiltersValid(filters))
+                    {
+                        throw new Exception("One or more of the supplied filter cirteria is invalid.");
+                    }
+
                     if (Target.Contains("file"))
                     {
                         return me.BackupTableToFile(GetFromParmOrFile(config, TableNameParmName),
                             GetFromParmOrFile(config, OutFileDirectoryParmName),
                             GetBoolFromParmOrFile(config, CompressParmName),
                             GetBoolFromParmOrFile(config, ValidateParmName),
-                            GetIntFromParmOrFile(config, TimeoutSecondsParmName));
+                            GetIntFromParmOrFile(config, TimeoutSecondsParmName),
+                            filters);
                     }
                     else if (Target.Contains("blob"))
                     {
@@ -228,7 +249,8 @@ namespace TheByteStuff.AzureTableBackupRestore
                             GetBoolFromParmOrFile(config, CompressParmName),
                             GetBoolFromParmOrFile(config, ValidateParmName),
                             GetIntFromParmOrFile(config, RetentionDaysParmName),
-                            GetIntFromParmOrFile(config, TimeoutSecondsParmName));
+                            GetIntFromParmOrFile(config, TimeoutSecondsParmName),
+                            filters);
                     }
                     else
                     {
@@ -245,5 +267,31 @@ namespace TheByteStuff.AzureTableBackupRestore
                 throw ex;
             }
         }
+
+        private string Copy(SecureString AzureStorageSourceConfigConnection, SecureString AzureStorageDestinationConfigConnection, IConfiguration config)
+        {
+            try
+            {
+                CopyAzureTables me = new CopyAzureTables(AzureStorageSourceConfigConnection, AzureStorageDestinationConfigConnection);
+
+                var sectionFilters = config.GetSection("Filters");
+                List<Filter> filters = sectionFilters.Get<List<Filter>>();
+
+                if (!Filter.AreFiltersValid(filters))
+                {
+                    throw new Exception("One or more of the supplied filter cirteria is invalid.");
+                }
+
+                return me.CopyTableToTable(GetFromParmOrFile(config, TableNameParmName),
+                    GetFromParmOrFile(config, DestinationTableNameParmName),
+                    GetIntFromParmOrFile(config, TimeoutSecondsParmName),
+                    filters);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 }

@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TheByteStuff.AzureTableUtilities" Version="1.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.3" />
+    <PackageReference Include="TheByteStuff.AzureTableUtilities" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
