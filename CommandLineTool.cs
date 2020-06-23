@@ -27,6 +27,7 @@ namespace TheByteStuff.AzureTableBackupRestore
         private readonly static string TableNameParmName = "TableName";
         private readonly static string DestinationTableNameParmName = "DestinationTableName";
         private readonly static string OriginalTableNameParmName = "OriginalTableName";
+        private readonly static string TableNameToDeleteParmName = "TableNameToDelete";
         private readonly static string BlobRootParmName = "BlobRoot";
         private readonly static string BlobFileNameParmName = "BlobFileName";
         private readonly static string WorkingDirectoryParmName = "WorkingDirectory";
@@ -66,19 +67,20 @@ namespace TheByteStuff.AzureTableBackupRestore
                 , OutFileDirectoryParmName //16
                 , RestoreFileNamePathParmName //17
                 , AzureStorageConfigConnectionDestinationParmName //18 
+                , TableNameToDeleteParmName  //19
             };
 
-            WriteOutput("Backup, Copy and Restore Azure Tables.  Backup maybe to local system file or Azure blob storage.  Restore may be from local system file or from Azure blob storage.  Command line parameter values will override a value in the settings file.");
+            WriteOutput("Backup, Copy, Delete and Restore Azure Tables.  Backup maybe to local system file or Azure blob storage.  Restore may be from local system file or from Azure blob storage.  Command line parameter values will override a value in the settings file.");
             WriteOutput("");
-            WriteOutput(String.Format("AzureTableBackupRestore [{0}] [{1}] [{2}] [{3}] [{4}] [{5}] [{6}] [{7}] [{8}] [{9}] [{10}] [{11}] [{12}] [{13}] [{14}] [{15}] [{16}] [{17}]", ArgOptions));
+            WriteOutput(String.Format("AzureTableBackupRestore [{0}] [{1}] [{2}] [{3}] [{18}]  [{4}] [{5}] [{6}] [{7}] [{8}] [{9}] [{10}] [{11}] [{12}] [{13}] [{14}] [{15}] [{16}] [{17}]", ArgOptions));
             WriteOutput("");
             WriteOutput(String.Format("{0}=<Configuration File Name> (default appsettings.json)", ArgOptions));
             WriteOutput(String.Format("{1}=<Configuration File Path> (default current directory)", ArgOptions));
             WriteOutput(String.Format("{2}=<ConnectionSpec> (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{3}=<ConnectionSpec> (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{18}=<ConnectionSpec> (or use Configuration File)", ArgOptions));
-            WriteOutput(String.Format("{4}=<Backup|Restore>", ArgOptions));
-            WriteOutput(String.Format("{5}=<Blob|File> (indicates source/destination for backup/restore)", ArgOptions));
+            WriteOutput(String.Format("{4}=<Backup|Copy|Delete|Restore>", ArgOptions));
+            WriteOutput(String.Format("{5}=<Blob|File|Row|Table> (indicates source/destination for backup/restore or Row vs Table for delete)", ArgOptions));
             WriteOutput(String.Format("{5}=<ToBlob|ToFile|FromBlob|FromFile|Blob|File> (indicates source/destination for backup/restore)", ArgOptions));
             WriteOutput(String.Format("{6}=<true|false>, valid on backup (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{7}=<true|false> (or use Configuration File)", ArgOptions));
@@ -86,6 +88,7 @@ namespace TheByteStuff.AzureTableBackupRestore
             WriteOutput(String.Format("{9}=<int> Azure call timeout in seconds (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{10}=<name of table>, valid on backup (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{11}=<Table name to restore or copy to>, valid on copy/restore (or use Configuration File)", ArgOptions));
+            WriteOutput(String.Format("{19}=<Table name to delete>, valid on delete (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{12}=<Name of Original Table as backed up>, valid on restore (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{13}=<Azure Root Blob> (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{14}=<Azure Blob File Name>, valid on restore only (or use Configuration File)", ArgOptions));
@@ -104,57 +107,69 @@ namespace TheByteStuff.AzureTableBackupRestore
             CommandLineTool instance = new CommandLineTool();
             instance.StoreArguments(args);
 
-            if (instance.IsParmOnInput(HelpParmName) || instance.IsParmOnInput(HelpParmName2))
+            try
             {
-                instance.DisplayHelp();
-            }
-            else
-            {
-                instance.WriteOutput(String.Format("using configuration file path '{0}'", instance.GetCommandLineParameterValue(ConfigFilePathParmName, Directory.GetCurrentDirectory())));
-                instance.WriteOutput(String.Format("using configuration file name '{0}'", instance.GetCommandLineParameterValue(ConfigFileNameParmName, "appsettings.json")));
-                var builder = new ConfigurationBuilder()
-                    .SetBasePath(instance.GetCommandLineParameterValue(ConfigFilePathParmName, Directory.GetCurrentDirectory()))
-                    .AddJsonFile(instance.GetCommandLineParameterValue(ConfigFileNameParmName, "appsettings.json"));
-                IConfiguration config = builder.Build();
-
-                foreach (char c in instance.GetCommandLineParameterValue(AzureStorageConfigConnectionParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureStorageConfigConnectionParmName)).ToCharArray())
+                if (instance.IsParmOnInput(HelpParmName) || instance.IsParmOnInput(HelpParmName2))
                 {
-                    instance.AzureStorageConfigConnection.AppendChar(c);
-                }
-                foreach (char c in instance.GetCommandLineParameterValue(AzureStorageConfigConnectionDestinationParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureStorageConfigConnectionDestinationParmName)).ToCharArray())
-                {
-                    instance.AzureStorageDestinationConfigConnection.AppendChar(c);
-                }
-                foreach (char c in instance.GetCommandLineParameterValue(AzureBlobStorageConfigConnectionParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureBlobStorageConfigConnectionParmName)).ToCharArray())
-                {
-                    instance.AzureBlobStorageConfigConnection.AppendChar(c);
-                }
-
-                string Command = instance.GetFromParmOrFile(config, CommandNameParmName);
-                if ("backup".Equals(Command) || "copy".Equals(Command) || "restore".Equals(Command))
-                {
-                    if ("backup".Equals(Command))
-                    {
-                        instance.WriteOutput("Beginning backup process.");
-                        instance.WriteOutput(String.Format("{0}", instance.Backup(instance.AzureBlobStorageConfigConnection, instance.AzureStorageConfigConnection, config)));
-                    }
-                    else if ("copy".Equals(Command))
-                    {
-                        instance.WriteOutput("Beginning copy process.");
-                        instance.WriteOutput(String.Format("{0}", instance.Copy(instance.AzureStorageConfigConnection, instance.AzureStorageDestinationConfigConnection, config)));
-                    }
-                    else
-                    {
-                        instance.WriteOutput("Beginning restore process.");
-                        instance.WriteOutput(String.Format("{0}", instance.Restore(instance.AzureBlobStorageConfigConnection, instance.AzureStorageConfigConnection, config)));
-                    }
-                    instance.WriteOutput("AzureBackupRestore ending.");
+                    instance.DisplayHelp();
                 }
                 else
                 {
-                    instance.WriteOutput(String.Format("Valid {0} values are 'backup' and 'restore'", CommandNameParmName));
-                    instance.DisplayHelp();
+                    instance.WriteOutput(String.Format("using configuration file path '{0}'", instance.GetCommandLineParameterValue(ConfigFilePathParmName, Directory.GetCurrentDirectory())));
+                    instance.WriteOutput(String.Format("using configuration file name '{0}'", instance.GetCommandLineParameterValue(ConfigFileNameParmName, "appsettings.json")));
+                    var builder = new ConfigurationBuilder()
+                        .SetBasePath(instance.GetCommandLineParameterValue(ConfigFilePathParmName, Directory.GetCurrentDirectory()))
+                        .AddJsonFile(instance.GetCommandLineParameterValue(ConfigFileNameParmName, "appsettings.json"));
+                    IConfiguration config = builder.Build();
+
+                    foreach (char c in instance.GetCommandLineParameterValue(AzureStorageConfigConnectionParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureStorageConfigConnectionParmName)).ToCharArray())
+                    {
+                        instance.AzureStorageConfigConnection.AppendChar(c);
+                    }
+                    foreach (char c in instance.GetCommandLineParameterValue(AzureStorageConfigConnectionDestinationParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureStorageConfigConnectionDestinationParmName)).ToCharArray())
+                    {
+                        instance.AzureStorageDestinationConfigConnection.AppendChar(c);
+                    }
+                    foreach (char c in instance.GetCommandLineParameterValue(AzureBlobStorageConfigConnectionParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureBlobStorageConfigConnectionParmName)).ToCharArray())
+                    {
+                        instance.AzureBlobStorageConfigConnection.AppendChar(c);
+                    }
+
+                    string Command = instance.GetFromParmOrFile(config, CommandNameParmName);
+                    if ("backup".Equals(Command) || "copy".Equals(Command) || "restore".Equals(Command) || "delete".Equals(Command))
+                    {
+                        if ("backup".Equals(Command))
+                        {
+                            instance.WriteOutput("Beginning backup process.");
+                            instance.WriteOutput(String.Format("{0}", instance.Backup(instance.AzureBlobStorageConfigConnection, instance.AzureStorageConfigConnection, config)));
+                        }
+                        else if ("copy".Equals(Command))
+                        {
+                            instance.WriteOutput("Beginning copy process.");
+                            instance.WriteOutput(String.Format("{0}", instance.Copy(instance.AzureStorageConfigConnection, instance.AzureStorageDestinationConfigConnection, config)));
+                        }
+                        else if ("delete".Equals(Command))
+                        {
+                            instance.WriteOutput("Beginning delete process.");
+                            instance.WriteOutput(String.Format("{0}", instance.Delete(instance.AzureStorageConfigConnection, config)));
+                        }
+                        else
+                        {
+                            instance.WriteOutput("Beginning restore process.");
+                            instance.WriteOutput(String.Format("{0}", instance.Restore(instance.AzureBlobStorageConfigConnection, instance.AzureStorageConfigConnection, config)));
+                        }
+                        instance.WriteOutput("AzureTableUtilities ending.");
+                    }
+                    else
+                    {
+                        instance.WriteOutput(String.Format("Valid {0} values are 'backup', 'copy, 'delete' and 'restore'", CommandNameParmName));
+                        instance.DisplayHelp();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                instance.WriteOutput(String.Format("Exception: {0}, {1}", ex.Message, ex.StackTrace));
             }
         }
 
@@ -293,5 +308,50 @@ namespace TheByteStuff.AzureTableBackupRestore
             }
         }
 
+        private string Delete(SecureString AzureBlobStorageConfigConnection, IConfiguration config)
+        {
+            try
+            {
+                DeleteAzureTables me = new DeleteAzureTables(AzureStorageConfigConnection);
+
+                string Target = GetFromParmOrFile(config, TargetParmName).ToLower();
+                if (!String.IsNullOrEmpty(Target))
+                {
+                    var sectionFilters = config.GetSection("Filters");
+                    List<Filter> filters = sectionFilters.Get<List<Filter>>();
+
+                    if (!Filter.AreFiltersValid(filters))
+                    {
+                        throw new Exception("One or more of the supplied filter cirteria is invalid.");
+                    }
+
+                    if (Target.Contains("rows"))
+                    {
+                        return me.DeleteAzureTableRows(GetFromParmOrFile(config, TableNameToDeleteParmName)
+                         , GetIntFromParmOrFile(config, TimeoutSecondsParmName)
+                         ,filters
+                         );
+                    }
+                    else if (Target.Contains("table"))
+                    {
+                        return me.DeleteAzureTable(GetFromParmOrFile(config, TableNameToDeleteParmName)
+                         , GetIntFromParmOrFile(config, TimeoutSecondsParmName)
+                         );
+                    }
+                    else
+                    {
+                        throw new Exception("Missing or invalid configuration for requested command.");
+                    }
+                }
+                else
+                {
+                    throw new Exception("Missing or invalid configuration for requested command.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }
