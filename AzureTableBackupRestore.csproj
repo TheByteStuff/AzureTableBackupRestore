@@ -2,8 +2,28 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <StartupObject>TheByteStuff.AzureTableBackupRestore.CommandLineTool</StartupObject>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>DotNet Tools command line implementation for backup, copy, delete and restore of Azure tables to/from local file or Azure blob storage using TheByteStuff.AzureTableUtilities found on NuGet: https://www.nuget.org/packages/TheByteStuff.AzureTableUtilities/
+
+Backup/Copy/Delete/Restore parameters can be stored in a settings file (appsettings.json) or passed on the command line.
+
+Filters need to be specified in the settings file.
+
+Tool Command Name is registered with the name "aztbu" as in "Azure Table Utilities".
+
+for help, aztbu -h</Description>
+    <Copyright>2020</Copyright>
+    <PackageProjectUrl>https://github.com/TheByteStuff/AzureTableBackupRestore</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/TheByteStuff/AzureTableBackupRestore</RepositoryUrl>
+    <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
+    <PackageTags>Azure Tables, Backup, Copy</PackageTags>
+    <PackAsTool>true</PackAsTool>
+    <PackageId>TheByteStuff.AzureTableUtilitiesCommandLine</PackageId>
+    <ToolCommandName>aztbu</ToolCommandName>
+    <PackageLicenseUrl>https://github.com/TheByteStuff/AzureTableBackupRestore/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>

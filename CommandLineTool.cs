@@ -169,6 +169,8 @@ namespace TheByteStuff.AzureTableBackupRestore
             }
             catch (Exception ex)
             {
+                instance.DisplayHelp();
+                instance.WriteOutput(" ");
                 instance.WriteOutput(String.Format("Exception: {0}, {1}", ex.Message, ex.StackTrace));
             }
         }
