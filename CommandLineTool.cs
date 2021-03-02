@@ -81,7 +81,7 @@ namespace TheByteStuff.AzureTableBackupRestore
             WriteOutput(String.Format("{18}=<ConnectionSpec> (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{4}=<Backup|Copy|Delete|Restore>", ArgOptions));
             WriteOutput(String.Format("{5}=<Blob|File|Row|Table> (indicates source/destination for backup/restore or Row vs Table for delete)", ArgOptions));
-            WriteOutput(String.Format("{5}=<ToBlob|ToFile|FromBlob|FromFile|Blob|File> (indicates source/destination for backup/restore)", ArgOptions));
+            WriteOutput(String.Format("{5}=<ToBlob|ToFile|FromBlob|FromFile|Blob|BlobDirect|File> (indicates source/destination for backup/restore)", ArgOptions));
             WriteOutput(String.Format("{6}=<true|false>, valid on backup (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{7}=<true|false> (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{8}=<int> Number of days to retain file, valid on backup (or use Configuration File)", ArgOptions));
@@ -207,6 +207,14 @@ namespace TheByteStuff.AzureTableBackupRestore
                             GetFromParmOrFile(config, RestoreFileNamePathParmName),
                             GetIntFromParmOrFile(config, TimeoutSecondsParmName));
                     }
+                    else if (Target.Contains("blobdirect"))
+                    {
+                        return me.RestoreTableFromBlobDirect(GetFromParmOrFile(config, DestinationTableNameParmName),
+                            GetFromParmOrFile(config, OriginalTableNameParmName),
+                            GetFromParmOrFile(config, BlobRootParmName),
+                            GetFromParmOrFile(config, BlobFileNameParmName),
+                            GetIntFromParmOrFile(config, TimeoutSecondsParmName));
+                    }
                     else if (Target.Contains("blob"))
                     {
                         return me.RestoreTableFromBlob(GetFromParmOrFile(config, DestinationTableNameParmName),
@@ -255,6 +263,15 @@ namespace TheByteStuff.AzureTableBackupRestore
                             GetFromParmOrFile(config, OutFileDirectoryParmName),
                             GetBoolFromParmOrFile(config, CompressParmName),
                             GetBoolFromParmOrFile(config, ValidateParmName),
+                            GetIntFromParmOrFile(config, TimeoutSecondsParmName),
+                            filters);
+                    }
+                    else if (Target.Contains("blobdirect"))
+                    {
+                        return me.BackupTableToBlobDirect(GetFromParmOrFile(config, TableNameParmName),
+                            GetFromParmOrFile(config, BlobRootParmName),
+                            GetBoolFromParmOrFile(config, CompressParmName),
+                            GetIntFromParmOrFile(config, RetentionDaysParmName),
                             GetIntFromParmOrFile(config, TimeoutSecondsParmName),
                             filters);
                     }
