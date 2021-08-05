@@ -80,7 +80,7 @@ namespace TheByteStuff.AzureTableBackupRestore
             WriteOutput(String.Format("{3}=<ConnectionSpec> (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{18}=<ConnectionSpec> (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{4}=<Backup|Copy|Delete|Restore>", ArgOptions));
-            WriteOutput(String.Format("{5}=<Blob|File|Row|Table> (indicates source/destination for backup/restore or Row vs Table for delete)", ArgOptions));
+            WriteOutput(String.Format("{5}=<Blob|File|Row|Table|All> (indicates source/destination for backup/restore or Row vs Table for delete)", ArgOptions));
             WriteOutput(String.Format("{5}=<ToBlob|ToFile|FromBlob|FromFile|Blob|BlobDirect|File> (indicates source/destination for backup/restore)", ArgOptions));
             WriteOutput(String.Format("{6}=<true|false>, valid on backup (or use Configuration File)", ArgOptions));
             WriteOutput(String.Format("{7}=<true|false> (or use Configuration File)", ArgOptions));
@@ -286,6 +286,14 @@ namespace TheByteStuff.AzureTableBackupRestore
                             GetIntFromParmOrFile(config, TimeoutSecondsParmName),
                             filters);
                     }
+                    else if (Target.Contains("all"))
+                    {
+                        return me.BackupAllTablesToBlob(GetFromParmOrFile(config, BlobRootParmName),
+                            GetBoolFromParmOrFile(config, CompressParmName),
+                            GetIntFromParmOrFile(config, RetentionDaysParmName),
+                            GetIntFromParmOrFile(config, TimeoutSecondsParmName),
+                            filters);
+                    }
                     else
                     {
                         throw new Exception("Missing or invalid configuration for requested command.");
@@ -307,6 +315,7 @@ namespace TheByteStuff.AzureTableBackupRestore
             try
             {
                 CopyAzureTables me = new CopyAzureTables(AzureStorageSourceConfigConnection, AzureStorageDestinationConfigConnection);
+                string Target = GetFromParmOrFile(config, TargetParmName).ToLower();
 
                 var sectionFilters = config.GetSection("Filters");
                 List<Filter> filters = sectionFilters.Get<List<Filter>>();
@@ -316,10 +325,22 @@ namespace TheByteStuff.AzureTableBackupRestore
                     throw new Exception("One or more of the supplied filter cirteria is invalid.");
                 }
 
-                return me.CopyTableToTable(GetFromParmOrFile(config, TableNameParmName),
-                    GetFromParmOrFile(config, DestinationTableNameParmName),
-                    GetIntFromParmOrFile(config, TimeoutSecondsParmName),
-                    filters);
+                if (String.IsNullOrEmpty(Target) || Target.Contains("table"))
+                {
+                    return me.CopyTableToTable(GetFromParmOrFile(config, TableNameParmName),
+                            GetFromParmOrFile(config, DestinationTableNameParmName),
+                            GetIntFromParmOrFile(config, TimeoutSecondsParmName),
+                            filters);
+                }
+                else if (Target.Contains("all"))
+                {
+                    return me.CopyAllTables(GetIntFromParmOrFile(config, TimeoutSecondsParmName),
+                            filters);
+                }
+                else
+                {
+                    throw new Exception("Missing or invalid configuration for requested command.");
+                }
             }
             catch (Exception ex)
             {
