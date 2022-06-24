@@ -8,3 +8,4 @@ obj/
 .vs/AzureTableBackupRestore/v15/Server/sqlite3/storage.ide
 .vs/AzureTableBackupRestore/v15/Server/sqlite3/storage.ide-shm
 .vs/AzureTableBackupRestore/v15/Server/sqlite3/storage.ide-wal
+.vs/AzureTableBackupRestore/DesignTimeBuild/.dtbcache
