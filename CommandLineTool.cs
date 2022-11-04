@@ -4,8 +4,8 @@ using System.Configuration;
 using System.Collections.Generic;
 using System.Security;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Binder;
-using Microsoft.Extensions.Configuration.FileExtensions;
+//using Microsoft.Extensions.Configuration.Binder;
+//using Microsoft.Extensions.Configuration.FileExtensions;
 using Microsoft.Extensions.Configuration.Json;
 using TheByteStuff.AzureTableUtilities;
 
