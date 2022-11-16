@@ -9,3 +9,7 @@ obj/
 .vs/AzureTableBackupRestore/v15/Server/sqlite3/storage.ide-shm
 .vs/AzureTableBackupRestore/v15/Server/sqlite3/storage.ide-wal
 .vs/AzureTableBackupRestore/DesignTimeBuild/.dtbcache
+/.vs/AzureTableBackupRestore/FileContentIndex
+/.vs/slnx.sqlite
+/.vs/VSWorkspaceState.json
+/.vs/AzureTableBackupRestore/v17
