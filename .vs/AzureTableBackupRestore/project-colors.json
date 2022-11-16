@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "04152d49-39f5-47b4-af26-c23e6262663a": {
+      "ProjectGuid": "04152d49-39f5-47b4-af26-c23e6262663a",
+      "DisplayName": "AzureTableBackupRestore",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}
