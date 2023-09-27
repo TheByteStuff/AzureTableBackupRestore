@@ -4,8 +4,6 @@ using System.Configuration;
 using System.Collections.Generic;
 using System.Security;
 using Microsoft.Extensions.Configuration;
-//using Microsoft.Extensions.Configuration.Binder;
-//using Microsoft.Extensions.Configuration.FileExtensions;
 using Microsoft.Extensions.Configuration.Json;
 using TheByteStuff.AzureTableUtilities;
 
@@ -37,9 +35,12 @@ namespace TheByteStuff.AzureTableBackupRestore
         private readonly static string HelpParmName = "help";
         private readonly static string HelpParmName2 = "-h";
 
-        private SecureString AzureBlobStorageConfigConnection = new SecureString();
-        private SecureString AzureStorageConfigConnection = new SecureString();
-        private SecureString AzureStorageDestinationConfigConnection = new SecureString();
+        //private SecureString AzureBlobStorageConfigConnection = new SecureString();
+        //private SecureString AzureStorageConfigConnection = new SecureString();
+        //private SecureString AzureStorageDestinationConfigConnection = new SecureString();
+        private string AzureBlobStorageConfigConnection = String.Empty;
+        private string AzureStorageConfigConnection = String.Empty;
+        private string AzureStorageDestinationConfigConnection = String.Empty;
 
         private void WriteOutput(string s)
         {
@@ -122,18 +123,23 @@ namespace TheByteStuff.AzureTableBackupRestore
                         .AddJsonFile(instance.GetCommandLineParameterValue(ConfigFileNameParmName, "appsettings.json"));
                     IConfiguration config = builder.Build();
 
-                    foreach (char c in instance.GetCommandLineParameterValue(AzureStorageConfigConnectionParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureStorageConfigConnectionParmName)).ToCharArray())
-                    {
-                        instance.AzureStorageConfigConnection.AppendChar(c);
-                    }
-                    foreach (char c in instance.GetCommandLineParameterValue(AzureStorageConfigConnectionDestinationParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureStorageConfigConnectionDestinationParmName)).ToCharArray())
-                    {
-                        instance.AzureStorageDestinationConfigConnection.AppendChar(c);
-                    }
-                    foreach (char c in instance.GetCommandLineParameterValue(AzureBlobStorageConfigConnectionParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureBlobStorageConfigConnectionParmName)).ToCharArray())
-                    {
-                        instance.AzureBlobStorageConfigConnection.AppendChar(c);
-                    }
+                    //new Version of AzureTableUtilities does not support SecureString
+                    //foreach (char c in instance.GetCommandLineParameterValue(AzureStorageConfigConnectionParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureStorageConfigConnectionParmName)).ToCharArray())
+                    //{
+                    //    instance.AzureStorageConfigConnection.AppendChar(c);
+                    //}
+                    //foreach (char c in instance.GetCommandLineParameterValue(AzureStorageConfigConnectionDestinationParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureStorageConfigConnectionDestinationParmName)).ToCharArray())
+                    //{
+                    //    instance.AzureStorageDestinationConfigConnection.AppendChar(c);
+                    //}
+                    //foreach (char c in instance.GetCommandLineParameterValue(AzureBlobStorageConfigConnectionParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureBlobStorageConfigConnectionParmName)).ToCharArray())
+                    //{
+                    //    instance.AzureBlobStorageConfigConnection.AppendChar(c);
+                    //}
+
+                    instance.AzureStorageConfigConnection = instance.GetCommandLineParameterValue(AzureStorageConfigConnectionParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureStorageConfigConnectionParmName));
+                    instance.AzureStorageDestinationConfigConnection = instance.GetCommandLineParameterValue(AzureStorageConfigConnectionDestinationParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureStorageConfigConnectionDestinationParmName));
+                    instance.AzureBlobStorageConfigConnection = instance.GetCommandLineParameterValue(AzureBlobStorageConfigConnectionParmName, Microsoft.Extensions.Configuration.ConfigurationExtensions.GetConnectionString(config, AzureBlobStorageConfigConnectionParmName));
 
                     string Command = instance.GetFromParmOrFile(config, CommandNameParmName);
                     if ("backup".Equals(Command) || "copy".Equals(Command) || "restore".Equals(Command) || "delete".Equals(Command))
@@ -192,7 +198,7 @@ namespace TheByteStuff.AzureTableBackupRestore
             return int.Parse(GetFromParmOrFile(config, ParmName));
         }
 
-        private string Restore(SecureString AzureBlobStorageConfigConnection, SecureString AzureStorageConfigConnection, IConfiguration config)
+        private string Restore(string AzureBlobStorageConfigConnection, string AzureStorageConfigConnection, IConfiguration config)
         {
             try
             {
@@ -234,13 +240,13 @@ namespace TheByteStuff.AzureTableBackupRestore
                     throw new Exception("Missing or invalid configuration for requested command.");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
-        private string Backup(SecureString AzureBlobStorageConfigConnection, SecureString AzureStorageConfigConnection, IConfiguration config)
+        private string Backup(string AzureBlobStorageConfigConnection, string AzureStorageConfigConnection, IConfiguration config)
         {
             try
             {
@@ -304,13 +310,13 @@ namespace TheByteStuff.AzureTableBackupRestore
                     throw new Exception("Missing or invalid configuration for requested command.");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
-        private string Copy(SecureString AzureStorageSourceConfigConnection, SecureString AzureStorageDestinationConfigConnection, IConfiguration config)
+        private string Copy(string AzureStorageSourceConfigConnection, string AzureStorageDestinationConfigConnection, IConfiguration config)
         {
             try
             {
@@ -342,13 +348,13 @@ namespace TheByteStuff.AzureTableBackupRestore
                     throw new Exception("Missing or invalid configuration for requested command.");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
-        private string Delete(SecureString AzureBlobStorageConfigConnection, IConfiguration config)
+        private string Delete(string AzureBlobStorageConfigConnection, IConfiguration config)
         {
             try
             {
@@ -388,9 +394,9 @@ namespace TheByteStuff.AzureTableBackupRestore
                     throw new Exception("Missing or invalid configuration for requested command.");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
     }

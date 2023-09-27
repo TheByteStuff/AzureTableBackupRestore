@@ -5,7 +5,9 @@
     <TargetFramework>net6.0</TargetFramework>
     <StartupObject>TheByteStuff.AzureTableBackupRestore.CommandLineTool</StartupObject>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Description>DotNet Tools command line implementation for backup, copy, delete and restore of Azure tables to/from local file or Azure blob storage using TheByteStuff.AzureTableUtilities found on NuGet: https://www.nuget.org/packages/TheByteStuff.AzureTableUtilities/
+    <Description>*** V4.0.0 is not compatible with backups from prior versions ***
+
+DotNet Tools command line implementation for backup, copy, delete and restore of Azure tables to/from local file or Azure blob storage using TheByteStuff.AzureTableUtilities found on NuGet: https://www.nuget.org/packages/TheByteStuff.AzureTableUtilities/
 
 Backup/Copy/Delete/Restore parameters can be stored in a settings file (appsettings.json) or passed on the command line.
 
@@ -14,19 +16,20 @@ Filters need to be specified in the settings file.
 Tool Command Name is registered with the name "aztbu" as in "Azure Table Utilities".
 
 for help, aztbu -h</Description>
-    <Copyright>2020-2022</Copyright>
+    <Copyright>2020-2023</Copyright>
     <PackageProjectUrl>https://github.com/TheByteStuff/AzureTableBackupRestore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/TheByteStuff/AzureTableBackupRestore</RepositoryUrl>
-    <PackageReleaseNotes>Update to .Net6 and v4.6.2 of TheByteStuff.AzureTableUtilities</PackageReleaseNotes>
+    <PackageReleaseNotes>*** This release is not compatible with prior versions ***   Upgrade to v6.0.0 of TheByteStuff.AzureTableUtilities</PackageReleaseNotes>
     <PackageTags>Azure Tables, Backup, Copy</PackageTags>
     <PackAsTool>true</PackAsTool>
     <PackageId>TheByteStuff.AzureTableUtilitiesCommandLine</PackageId>
     <ToolCommandName>aztbu</ToolCommandName>
     <PackageLicenseUrl>https://github.com/TheByteStuff/AzureTableBackupRestore/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>3.0.0.0</AssemblyVersion>
-    <FileVersion>3.0.0.0</FileVersion>
-    <Version>3.0.0</Version>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <FileVersion>4.0.0.0</FileVersion>
+    <Version>4.0.0</Version>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>CardFront_Clip.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,12 +38,20 @@ for help, aztbu -h</Description>
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
-    <PackageReference Include="TheByteStuff.AzureTableUtilities" Version="4.6.2" />
+    <PackageReference Include="TheByteStuff.AzureTableUtilities" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CardFront_Clip.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 
