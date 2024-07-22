@@ -5,8 +5,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <StartupObject>TheByteStuff.AzureTableBackupRestore.CommandLineTool</StartupObject>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Description>*** V4.0.0 is not compatible with backups from prior versions ***
-
+    <Description>
 DotNet Tools command line implementation for backup, copy, delete and restore of Azure tables to/from local file or Azure blob storage using TheByteStuff.AzureTableUtilities found on NuGet: https://www.nuget.org/packages/TheByteStuff.AzureTableUtilities/
 
 Backup/Copy/Delete/Restore parameters can be stored in a settings file (appsettings.json) or passed on the command line.
@@ -19,15 +18,15 @@ for help, aztbu -h</Description>
     <Copyright>2020-2023</Copyright>
     <PackageProjectUrl>https://github.com/TheByteStuff/AzureTableBackupRestore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/TheByteStuff/AzureTableBackupRestore</RepositoryUrl>
-    <PackageReleaseNotes>*** This release is not compatible with prior versions ***   Upgrade to v6.0.0 of TheByteStuff.AzureTableUtilities</PackageReleaseNotes>
+    <PackageReleaseNotes>Upgrade to v6.1.0 of TheByteStuff.AzureTableUtilities</PackageReleaseNotes>
     <PackageTags>Azure Tables, Backup, Copy</PackageTags>
     <PackAsTool>true</PackAsTool>
     <PackageId>TheByteStuff.AzureTableUtilitiesCommandLine</PackageId>
     <ToolCommandName>aztbu</ToolCommandName>
     <PackageLicenseUrl>https://github.com/TheByteStuff/AzureTableBackupRestore/blob/master/LICENSE</PackageLicenseUrl>
-    <AssemblyVersion>4.0.0.0</AssemblyVersion>
-    <FileVersion>4.0.0.0</FileVersion>
-    <Version>4.0.0</Version>
+    <AssemblyVersion>4.1.0.0</AssemblyVersion>
+    <FileVersion>4.1.0.0</FileVersion>
+    <Version>4.1.0</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>CardFront_Clip.png</PackageIcon>
   </PropertyGroup>
@@ -38,7 +37,7 @@ for help, aztbu -h</Description>
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
-    <PackageReference Include="TheByteStuff.AzureTableUtilities" Version="6.0.0" />
+    <PackageReference Include="TheByteStuff.AzureTableUtilities" Version="6.1.0" />
   </ItemGroup>
 
   <ItemGroup>

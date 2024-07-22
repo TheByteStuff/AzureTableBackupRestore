@@ -2,7 +2,7 @@
   "profiles": {
     "AzureTableBackupRestore": {
       "commandName": "Project",
-      "commandLineArgs": "AzureStorageConfigConnectionx=CommandLineAS AzureBlobStorageConfigConnectionx=CommandLineBS"
+      "commandLineArgs": "AzureStorageConfigConnectionx=CommandLineAS AzureBlobStorageConfigConnectionx=CommandLineBS  ConfigFilePathXX=D:\\temp\\AzureSystemLogs_AgingScripts ConfigFileNameXX=appSettingsArchive_Win10Dev.json"
     }
   }
 }
